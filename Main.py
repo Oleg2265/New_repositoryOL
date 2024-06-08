@@ -1,12 +1,25 @@
 import random
-
+import json
 from PyQt5 import *
 from PyQt5.QtWidgets import *
 from pygame.time import wait
 
+notes = {}
+def read_data():
+    global notes
+    with open("database.json", "r", encoding="utf-8") as file:
+        notes = json.load(file)
+
+
+
+def write_data():
+    global notes
+    with open("database.json", "w", encoding="utf-8") as file:
+        json.dump(notes, file, ensure_ascii=False, indent=4)
+read_data()
 app = QApplication([])
-coins = "10"
-numb = 0
+
+good = 0
 app.setStyleSheet("""
         QPushButton {
             color:#35374B;
@@ -37,12 +50,12 @@ app.setStyleSheet("""
 
 
 
-add_perclick_button = QPushButton("Збільшити кількість монет за правильну відповідь")
+add_perclick_button = QPushButton("Збільшити множувач монет:КОШТУЄ 10 МОНЕТ")
+add_perclick_button5 = QPushButton("Збільшити множувач монет на 5:КОШТУЄ 50 МОНЕТ")
 
 
 
-
-coins_count = QLabel("Ваші монети:"+coins)
+coins_count = QLabel("Ваші монети:"+str(notes["coins"]))
 intro = QLabel("Математичні завдання!")
 ans1 = QPushButton("49")
 ans2 = QPushButton("7")
@@ -72,12 +85,19 @@ B2 = QHBoxLayout()
 
 
 B2.addWidget(add_perclick_button)
+K1.addWidget(coins_count)
+B2.addWidget(add_perclick_button5)
+
 
 
 window.setLayout(K1)
 
 K1.addLayout(B1)
 K1.addLayout(B2)
+
+
+
+
 
 
 
@@ -111,7 +131,7 @@ H1.addLayout(V5)
 
 
 V1.addWidget(question)
-V1.addWidget(coins_count)
+
 H1.addWidget(intro)
 V2.addWidget(ans1)
 V2.addWidget(ans2)
@@ -125,87 +145,145 @@ V5.addWidget(Start)
 
 
 def gotoshop():
+    coins_count.setText("Ваші монети:" + str(notes["coins"]))
     window.show()
 
 
 
 def next_question():
+    global good
     rand = random.randint(1,8)
     if rand == 1:
         question.setText("Скільки буде 7*7")
-        numb = 49
+        good = 1
     if rand == 2:
         question.setText("Скільки буде (7+3)*5")
-        numb = 50
+        good = 2
     if rand == 3:
         question.setText("Скільки буде (2.6/2)+1")
-        numb = 2.3
+        good = 3
     if rand == 4:
         question.setText("Скільки буде 30-7")
-        numb = 23
+        good = 4
     if rand == 5:
         question.setText("Скільки буде 3*4/2")
-        numb = 6
+        good = 5
     if rand == 6:
         question.setText("Скільки буде √25")
-        numb = 5
+        good = 6
     if rand == 7:
         question.setText("Скільки буде √2401")
-        numb = 49
+        good = 7
     if rand == 8:
         question.setText("Скільки буде 50*123-6100")
-        numb = 50
+        good = 8
 
 
 def start_game():
+    global good
     intro.setText("   ")
+    rand = random.randint(1,8)
+    global good
     rand = random.randint(1,8)
     if rand == 1:
         question.setText("Скільки буде 7*7")
-        numb = 49
+        good = 1
     if rand == 2:
         question.setText("Скільки буде (7+3)*5")
-        numb = 50
+        good = 2
     if rand == 3:
         question.setText("Скільки буде (2.6/2)+1")
-        numb = 2.3
+        good = 3
     if rand == 4:
         question.setText("Скільки буде 30-7")
-        numb = 23
+        good = 4
     if rand == 5:
         question.setText("Скільки буде 3*4/2")
-        numb = 6
+        good = 5
     if rand == 6:
         question.setText("Скільки буде √25")
-        numb = 5
+        good = 6
     if rand == 7:
         question.setText("Скільки буде √2401")
-        numb = 49
+        good = 7
     if rand == 8:
         question.setText("Скільки буде 50*123-6100")
-        numb = 50
+        good = 8
 
-def answr1():
-    if numb == 49:
-        coins + 1
-        print("f")
+
+
+def answr49():
+    if good == 1:
+        notes["coins"] += notes["money_x"]
+    next_question()
+
+
+def answr50():
+    if good == 2:
+        notes["coins"] += notes["money_x"]
+        print(1)
+    next_question()
+
+
+def answr2_3():
+    if good == 3:
+        notes["coins"] += notes["money_x"]
+    next_question()
+def answr23():
+    if good == 4:
+        notes["coins"] += notes["money_x"]
+    next_question()
+def answr12():
+    if good == 5:
+        notes["coins"] += notes["money_x"]
+    next_question()
+def answr6():
+    if good == 6:
+        notes["coins"] += notes["money_x"]
+    next_question()
+def answr49_2():
+    if good == 7:
+        notes["coins"] += notes["money_x"]
+    next_question()
+def answr50_2():
+    if good == 8:
+        notes["coins"] += notes["money_x"]
+    next_question()
+
+
+def More_money_x():
+    if notes["coins"]>10:
+        notes["money_x"] += 1
+        notes["coins"] -= 10
+        print("Успішна покупка!")
+        coins_count.setText("Ваші монети:" + str(notes["coins"]))
     else:
-        coins + 0
-        next_question()
+        print("Нехватає коштів!")
 
-def answr2():
-    if numb == 7:
-        coins + 1
+def More_money_x5():
+    if notes["coins"]>50:
+        notes["money_x"] += 5
+        notes["coins"] -= 50
+        print("Успішна покупка!")
+        coins_count.setText("Ваші монети:" + str(notes["coins"]))
     else:
-        coins + 0
-        next_question()
+        print("Нехватає коштів!")
 
 
 
-ans1.clicked.connect(answr1)
+
 Start.clicked.connect(start_game)
 intro.setObjectName("introduction")
 coins_count.setObjectName("okk")
 ans1.clicked.connect(next_question)
+ans1.clicked.connect(answr49)
+ans1.clicked.connect(answr49_2)
+ans3.clicked.connect(answr23)
+ans4.clicked.connect(answr50)
+ans4.clicked.connect(answr50_2)
+ans5.clicked.connect(answr2_3)
+ans6.clicked.connect(answr6)
 shop.clicked.connect(gotoshop)
+add_perclick_button.clicked.connect(More_money_x)
+add_perclick_button5.clicked.connect(More_money_x5)
 app.exec()

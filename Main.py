@@ -1,12 +1,18 @@
 import random
 import json
 from PyQt5 import *
+from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import *
+
 from pygame.time import wait
 start_game_work = 0
 notes = {}
 jackpot_chance = 0
 x_buyer = 0
+random_crate = 0
+
+
+
 def read_data():
     global notes
     with open("database.json", "r", encoding="utf-8") as file:
@@ -62,6 +68,10 @@ app.setStyleSheet("""
 
 add_perclick_button = QPushButton("Збільшити множувач монет:КОШТУЄ 10 МОНЕТ")
 add_perclick_button5 = QPushButton("...")
+add_perclick_button20 = QPushButton("...")
+Byblik_coiner = QLabel("Бублік")
+Byblik_coiner_px = QPixmap("pixil-frame-0 (1).png")
+Byblik_coiner.setPixmap(Byblik_coiner_px)
 
 
 open_case = QPushButton("Відкрити кейс(1-10000+ монет)")
@@ -75,12 +85,15 @@ ans5 = QPushButton("2.3")
 ans6 = QPushButton("6")
 
 
-
+byblik_add = QPushButton("Вложити 1000 монет")
 shop = QPushButton("Магазин")
-
+byb_coiner = QPushButton("Бубл_койнер")
 question = QLabel("Нажміть на кнопку старту для створення питання")
 Start = QPushButton("Створити питання")
 Case_count = QLabel("Ваші кейси:"+ str(notes["case_count"]))
+byblik_get = QLabel("При виведенні ви получите:" + str(notes["byblik_addAmount"]))
+byblik_lose = QPushButton("Вивести кошти з byblik")
+byblik_change = QPushButton("Запустити курс(30 монет за 1 запуск)")
 
 
 
@@ -100,7 +113,8 @@ K1.addWidget(coins_count)
 K1.addWidget(Case_count)
 B2.addWidget(add_perclick_button5)
 B3.addWidget(open_case)
-
+B3.addWidget(add_perclick_button20)
+K1.addWidget(byb_coiner)
 
 window.setLayout(K1)
 
@@ -112,9 +126,45 @@ K1.addLayout(B3)
 
 
 
+byblik_Coiner = QDialog()
+byblik_Coiner.resize(900,500)
+
+N1 = QHBoxLayout()
+M1 = QVBoxLayout()
+M2 = QVBoxLayout()
+
+byblik_Coiner.setLayout(N1)
+N1.addLayout(M1)
+N1.addLayout(M2)
+M1.addWidget(Byblik_coiner)
+M2.addWidget(byblik_add)
+M2.addWidget(byblik_get)
+M2.addWidget(byblik_lose)
+M2.addWidget(byblik_change)
 
 
 
+
+def bybl_coinik():
+    byblik_Coiner.show()
+
+def invest():
+    if notes["coins"] >= 1001:
+        notes["coins"] -= 1000
+        notes["byblik_addAmount"] += 1000
+        byblik_get.setText("При виведенні ви получите:" + str(notes["byblik_addAmount"]))
+    else:
+        print("Нехватає коштів!")
+
+
+def exchange():
+    if notes["byblik_addAmount"] >= 100:
+        notes["coins"] += notes["byblik_addAmount"]
+        notes["byblik_addAmount"] = 0
+        byblik_get.setText("При виведенні ви получите:" + str(notes["byblik_addAmount"]))
+        print("Успішно")
+    else:
+        print("На рахунку немає коштів!")
 
 
 
@@ -240,6 +290,15 @@ def open_crates():
     else:
         pass
 
+def CRATE():
+    global random_crate
+    random_crate = random.randint(0,33)
+    if random_crate == 33:
+        notes["case_count"] += 1
+        random_crate = 0
+        print("Ви получили кейс")
+        Case_count.setText(("Ваші кейси:"+ str(notes["case_count"])))
+
 def jackpot():
     global jackpot_chance
     jackpot_chance = random.randint(0,30)
@@ -247,12 +306,17 @@ def jackpot():
         notes["coins"] += 7*notes["money_x"]
         print("Джекпот!")
 
+
+
+
+
 def answr49():
     global good
     if good == 1:
         notes["coins"] += notes["money_x"]
         print(1)
         jackpot()
+        CRATE()
     next_question()
 
 
@@ -261,6 +325,7 @@ def answr5():
         notes["coins"] += notes["money_x"]
         jackpot()
         print(2)
+        CRATE()
     next_question()
 
 
@@ -268,36 +333,42 @@ def answr2_3():
     if good == 3:
         notes["coins"] += notes["money_x"]
         jackpot()
+        CRATE()
         print(3)
     next_question()
 def answr23():
     if good == 4:
         notes["coins"] += notes["money_x"]
         jackpot()
+        CRATE()
         print(4)
     next_question()
 def answr6():
     if good == 5:
         notes["coins"] += notes["money_x"]
         jackpot()
+        CRATE()
         print(5)
     next_question()
 def answr5_2():
     if good == 6:
         notes["coins"] += notes["money_x"]
         jackpot()
+        CRATE()
         print(6)
     next_question()
 def answr2401():
     if good == 7:
         notes["coins"] += notes["money_x"]
         jackpot()
+        CRATE()
         print(7)
     next_question()
 def answr7():
     if good == 8:
         notes["coins"] += notes["money_x"]
         jackpot()
+        CRATE()
         print(8)
     next_question()
 
@@ -307,25 +378,54 @@ def More_money_x():
     if x_buyer >= 4:
         add_perclick_button5.setText("Збільшити множувач монет на 5:КОШТУЄ 50 МОНЕТ")
 
+
+    if x_buyer >= 20:
+        print("Працює")
+        add_perclick_button20.setText("Збільшити множувач монет на 5:КОШТУЄ 50 МОНЕТ")
+
     if notes["coins"]>10:
         notes["money_x"] += 1
         notes["coins"] -= 10
         print("Успішна покупка!")
         coins_count.setText("Ваші монети:" + str(notes["coins"]))
+        x_buyer += 1
     else:
         print("Нехватає коштів!")
-    x_buyer += 1
+
 
 def More_money_x5():
     global x_buyer
+    print(f"{x_buyer=}")
+    if x_buyer >= 20:
+        print("Працює")
+        add_perclick_button20.setText("Збільшити множувач монет на 5:КОШТУЄ 50 МОНЕТ")
+
+
     if x_buyer >= 5:
         if notes["coins"]>50:
             notes["money_x"] += 5
             notes["coins"] -= 50
             print("Успішна покупка!")
             coins_count.setText("Ваші монети:" + str(notes["coins"]))
+            x_buyer += 1
         else:
             print("Нехватає коштів!")
+    print(notes["money_x"])
+
+
+
+def More_money_x20():
+    global x_buyer
+    if x_buyer >= 20:
+        if notes["coins"]>1500:
+            notes["money_x"] += 20
+            notes["coins"] -= 1500
+            print("Успішна покупка!")
+            coins_count.setText("Ваші монети:" + str(notes["coins"]))
+            x_buyer += 1
+        else:
+            print("Нехватає коштів!")
+    print(notes["money_x"])
 
 
 
@@ -345,5 +445,9 @@ ans6.clicked.connect(answr6)
 shop.clicked.connect(gotoshop)
 add_perclick_button.clicked.connect(More_money_x)
 add_perclick_button5.clicked.connect(More_money_x5)
+add_perclick_button20.clicked.connect(More_money_x20)
 open_case.clicked.connect(open_crates)
+byb_coiner.clicked.connect(bybl_coinik)
+byblik_add.clicked.connect(invest)
+byblik_lose.clicked.connect(exchange)
 app.exec()

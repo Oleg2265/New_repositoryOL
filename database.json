@@ -1,5 +1,6 @@
 {
   "coins":10000,
   "money_x": 1,
-  "case_count": 1
+  "case_count": 1,
+  "byblik_addAmount": 0
 }

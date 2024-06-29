@@ -10,7 +10,7 @@ notes = {}
 jackpot_chance = 0
 x_buyer = 0
 random_crate = 0
-
+backChange = 0
 
 
 def read_data():
@@ -59,7 +59,37 @@ app.setStyleSheet("""
         QPushButton#Open_crate {                  
              color: #35374B;             
              background-color: #FFFFCC;      
-        }                                            
+        }
+        QPushButton#Name {                  
+             font-size: 22px;           
+             background-color: #ADD899;   
+             height: 55px;   
+             weight: 75px;   
+        }
+        QPushButton#lost {                  
+             font-size: 22px;           
+             background-color: #973131;   
+             height: 55px;   
+             weight: 75px;   
+        }
+        QPushButton#changed {                  
+             font-size: 22px;           
+             background-color: #9BEC00;   
+             height: 55px;   
+             weight: 75px;   
+        }
+        QPushButton#Addmore {                  
+             font-size: 22px;           
+             background-color: #adfc99;   
+             height: 55px;   
+             weight: 75px;   
+        }
+        QPushButton#changemore{                  
+             font-size: 22px;           
+             background-color: #adfc99;   
+             height: 55px;   
+             weight: 75px;   
+        }                                              
     """)
 
 
@@ -71,6 +101,7 @@ add_perclick_button5 = QPushButton("...")
 add_perclick_button20 = QPushButton("...")
 Byblik_coiner = QLabel("Бублік")
 Byblik_coiner_px = QPixmap("pixil-frame-0 (1).png")
+byblik_coiner_downpx = QPixmap("pixil-frame-0 (2).png")
 Byblik_coiner.setPixmap(Byblik_coiner_px)
 
 
@@ -84,7 +115,7 @@ ans4 = QPushButton("5")
 ans5 = QPushButton("2.3")
 ans6 = QPushButton("6")
 
-
+byblik_add10 = QPushButton("Вложити 10000 монет")
 byblik_add = QPushButton("Вложити 1000 монет")
 shop = QPushButton("Магазин")
 byb_coiner = QPushButton("Бубл_койнер")
@@ -94,8 +125,8 @@ Case_count = QLabel("Ваші кейси:"+ str(notes["case_count"]))
 byblik_get = QLabel("При виведенні ви получите:" + str(notes["byblik_addAmount"]))
 byblik_lose = QPushButton("Вивести кошти з byblik")
 byblik_change = QPushButton("Запустити курс(30 монет за 1 запуск)")
-
-
+buy_case = QPushButton("Купити кейс КОШТУЄ 4000")
+byblik_change10x = QPushButton("Запустити курс(300 монет за 10 запусків)")
 
 window = QWidget()
 window.resize(700, 500)
@@ -115,6 +146,7 @@ B2.addWidget(add_perclick_button5)
 B3.addWidget(open_case)
 B3.addWidget(add_perclick_button20)
 K1.addWidget(byb_coiner)
+K1.addWidget(buy_case)
 
 window.setLayout(K1)
 
@@ -138,9 +170,12 @@ N1.addLayout(M1)
 N1.addLayout(M2)
 M1.addWidget(Byblik_coiner)
 M2.addWidget(byblik_add)
+M2.addWidget(byblik_add10)
 M2.addWidget(byblik_get)
+
 M2.addWidget(byblik_lose)
 M2.addWidget(byblik_change)
+M2.addWidget(byblik_change10x)
 
 
 
@@ -153,15 +188,35 @@ def invest():
         notes["coins"] -= 1000
         notes["byblik_addAmount"] += 1000
         byblik_get.setText("При виведенні ви получите:" + str(notes["byblik_addAmount"]))
+        coins_count.setText("Ваші монети:"+str(notes["coins"]))
+    else:
+        print("Нехватає коштів!")
+
+def invest10x():
+    if notes["coins"] >= 10001:
+        notes["coins"] -= 10000
+        notes["byblik_addAmount"] += 10000
+        byblik_get.setText("При виведенні ви получите:" + str(notes["byblik_addAmount"]))
+        coins_count.setText("Ваші монети:" + str(notes["coins"]))
+    else:
+        print("Нехватає коштів!")
+
+def buy_cases():
+    if notes["coins"] >= 4000:
+        notes["coins"] -= 4000
+        notes["case_count"] += 1
+        coins_count.setText("Ваші монети:"+str(notes["coins"]))
+        Case_count.setText("Ваші кейси:"+ str(notes["case_count"]))
     else:
         print("Нехватає коштів!")
 
 
 def exchange():
-    if notes["byblik_addAmount"] >= 100:
+    if notes["byblik_addAmount"] >= 10:
         notes["coins"] += notes["byblik_addAmount"]
         notes["byblik_addAmount"] = 0
         byblik_get.setText("При виведенні ви получите:" + str(notes["byblik_addAmount"]))
+        coins_count.setText("Ваші монети:"+str(notes["coins"]))
         print("Успішно")
     else:
         print("На рахунку немає коштів!")
@@ -306,6 +361,44 @@ def jackpot():
         notes["coins"] += 7*notes["money_x"]
         print("Джекпот!")
 
+def change_curs():
+    global backChange
+    if notes["coins"] >= 30:
+        notes["coins"] -= 30
+        coins_count.setText("Ваші монети:"+str(notes["coins"]))
+        backChange = random.randint(1,2)
+        if backChange == 1:
+            Byblik_coiner.setPixmap(Byblik_coiner_px)
+            notes["byblik_addAmount"] *= 2
+            print(notes["byblik_addAmount"])
+            byblik_get.setText("При виведенні ви получите:" + str(notes["byblik_addAmount"]))
+
+        if backChange == 2:
+            Byblik_coiner.setPixmap(byblik_coiner_downpx)
+            notes["byblik_addAmount"] /= 2
+            byblik_get.setText("При виведенні ви получите:" + str(notes["byblik_addAmount"]))
+    else:
+        print("У вас нехватає коштів!")
+
+def change_curs10x():
+    global backChange
+    if notes["coins"] >= 300:
+        notes["coins"] -= 300
+        for i in range(10):
+            coins_count.setText("Ваші монети:"+str(notes["coins"]))
+            backChange = random.randint(1,2)
+            if backChange == 1:
+                Byblik_coiner.setPixmap(Byblik_coiner_px)
+                notes["byblik_addAmount"] *= 2
+                print(notes["byblik_addAmount"])
+                byblik_get.setText("При виведенні ви получите:" + str(notes["byblik_addAmount"]))
+
+            if backChange == 2:
+                Byblik_coiner.setPixmap(byblik_coiner_downpx)
+                notes["byblik_addAmount"] /= 2
+                byblik_get.setText("При виведенні ви получите:" + str(notes["byblik_addAmount"]))
+    else:
+        print("У вас нехватає коштів!")
 
 
 
@@ -381,7 +474,7 @@ def More_money_x():
 
     if x_buyer >= 20:
         print("Працює")
-        add_perclick_button20.setText("Збільшити множувач монет на 5:КОШТУЄ 50 МОНЕТ")
+        add_perclick_button20.setText("Збільшити множувач монет на 20:КОШТУЄ 1500 МОНЕТ")
 
     if notes["coins"]>10:
         notes["money_x"] += 1
@@ -398,7 +491,7 @@ def More_money_x5():
     print(f"{x_buyer=}")
     if x_buyer >= 20:
         print("Працює")
-        add_perclick_button20.setText("Збільшити множувач монет на 5:КОШТУЄ 50 МОНЕТ")
+        add_perclick_button20.setText("Збільшити множувач монет на 20:КОШТУЄ 1500 МОНЕТ")
 
 
     if x_buyer >= 5:
@@ -450,4 +543,16 @@ open_case.clicked.connect(open_crates)
 byb_coiner.clicked.connect(bybl_coinik)
 byblik_add.clicked.connect(invest)
 byblik_lose.clicked.connect(exchange)
+byblik_change.clicked.connect(change_curs)
+buy_case.clicked.connect(buy_cases)
+byblik_add10.clicked.connect(invest10x)
+byblik_change10x.clicked.connect(change_curs10x)
+byblik_add.setObjectName("Name")
+byblik_lose.setObjectName("lost")
+byblik_change.setObjectName("changed")
+byblik_add10.setObjectName("Addmore")
+byblik_change10x.setObjectName("changemore")
 app.exec()
+
+
+
